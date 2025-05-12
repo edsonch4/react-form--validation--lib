@@ -1,0 +1,17 @@
+
+{
+  "name": "react-form-validation-lib",
+  "version": "1.0.0",
+  "description": "A lightweight and extensible form validation hook for React using data attributes.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0"
+  },
+  "keywords": ["react", "form", "validation", "hook", "typescript"],
+  "author": "Edson Tavares",
+  "license": "MIT"
+}
