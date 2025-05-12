@@ -3,8 +3,6 @@
 
 Uma biblioteca leve, poderosa e extensível para validação de formulários em React com suporte a atributos HTML e validações customizadas.
 
----
-
 ## ✨ Destaques
 
 - Validação baseada em atributos (`required`, `type="email"`, `data-*`)
@@ -13,19 +11,10 @@ Uma biblioteca leve, poderosa e extensível para validação de formulários em 
 - Suporte a campos de texto, email, checkbox, file, e mais
 - Pronto para usar com Tailwind CSS (ou qualquer outro estilo)
 
----
-
 ## 🚀 Instalação
-
-```bash
 npm install react-form-validation-lib
-```
-
----
 
 ## 🔧 Uso Básico
-
-```tsx
 import React from "react";
 import { useFormValidation } from "react-form-validation-lib";
 
@@ -58,9 +47,6 @@ export default function MyForm() {
     </form>
   );
 }
-```
-
----
 
 ## 🧩 Validações Disponíveis
 
@@ -75,21 +61,14 @@ export default function MyForm() {
 | `data-maxlength`        | Tamanho máximo                     |
 | `data-pattern`          | Expressão regular customizada      |
 
----
+
 
 ## ✍️ Adicionando Validações Customizadas
 
-```ts
 import { addValidationRule } from "react-form-validation-lib";
 
 addValidationRule("even", (value) => parseInt(value, 10) % 2 === 0, "O número deve ser par.");
-```
 
----
-
-## 🧪 Exemplo com Tailwind CSS
-
-```tsx
 <input
   name="email"
   type="email"
@@ -97,17 +76,4 @@ addValidationRule("even", (value) => parseInt(value, 10) % 2 === 0, "O número d
   className="border p-2 rounded w-full"
 />
 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-```
 
----
-
-## 🔗 Links
-
-- [GitHub Repository](https://github.com/seu-usuario/react-form-validation-lib)
-- [Issues / Bugs](https://github.com/seu-usuario/react-form-validation-lib/issues)
-
----
-
-## 📜 Licença
-
-MIT © [Seu Nome]
