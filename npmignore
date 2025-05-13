@@ -1,0 +1,11 @@
+
+src/
+*.ts
+*.tsx
+*.test.*
+.vscode/
+__tests__/
+*.config.js
+*.config.ts
+tsconfig.json
+README.md
