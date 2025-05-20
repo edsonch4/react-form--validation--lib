@@ -1,4 +1,3 @@
-
 # React Form Validation Hook
 
 Uma biblioteca leve, poderosa e extensível para validação de formulários em React com suporte a atributos HTML e validações customizadas.
@@ -6,17 +5,21 @@ Uma biblioteca leve, poderosa e extensível para validação de formulários em 
 ## ✨ Destaques
 
 - Validação baseada em atributos (`required`, `type="email"`, `data-*`)
-- Mensagens de erro globais e personalizáveis
+- Mensagens de erro globais, multilíngues e personalizáveis
+- Possibilidade de definir mensagens específicas por campo
 - Regras customizadas com `addValidationRule`
 - Suporte a campos de texto, email, checkbox, file, e mais
 - Pronto para usar com Tailwind CSS (ou qualquer outro estilo)
 
 ## 🚀 Instalação
-npm install react-form-validation-lib
+```bash
+npm install react-form-validator
+```
 
 ## 🔧 Uso Básico
+```tsx
 import React from "react";
-import { useFormValidation } from "react-form-validation-lib";
+import { useFormValidation } from "react-form-validator";
 
 export default function MyForm() {
   const { formRef, errors, validate } = useFormValidation();
@@ -47,6 +50,29 @@ export default function MyForm() {
     </form>
   );
 }
+```
+
+## 🌍 Idiomas
+Você pode definir o idioma padrão e mensagens customizadas por campo:
+
+```tsx
+useFormValidation({
+  lang: "en",
+  messages: {
+    en: {
+      email: {
+        required: "Email is required!",
+        email: "Enter a valid email!",
+      },
+    },
+    pt: {
+      name: {
+        onlyLetters: "Somente letras, por favor.",
+      },
+    },
+  },
+});
+```
 
 ## 🧩 Validações Disponíveis
 
@@ -57,23 +83,34 @@ export default function MyForm() {
 | `type="file"` + `accept`| Validação de tipo de arquivo       |
 | `data-validate="rule"`  | Regras customizadas como `onlyLetters` |
 | `data-equals-to="name"` | Campo deve ser igual a outro       |
-| `data-minlength`        | Tamanho mínimo                     |
-| `data-maxlength`        | Tamanho máximo                     |
-| `data-pattern`          | Expressão regular customizada      |
-
-
+| `minlength`             | Tamanho mínimo (`minLength` no HTML) |
+| `maxlength`             | Tamanho máximo (`maxLength` no HTML) |
+| `pattern`               | Expressão regular (`pattern` no HTML) |
 
 ## ✍️ Adicionando Validações Customizadas
 
-import { addValidationRule } from "react-form-validation-lib";
+```tsx
+import { addValidationRule } from "react-form-validator";
 
-addValidationRule("even", (value) => parseInt(value, 10) % 2 === 0, "O número deve ser par.");
+addValidationRule("even", (value) => parseInt(value, 10) % 2 === 0, {
+  pt: "O número deve ser par.",
+  en: "The number must be even.",
+});
+```
 
-<input
-  name="email"
-  type="email"
-  required
-  className="border p-2 rounded w-full"
-/>
-{errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+## 🛠️ Mensagens Padrão Customizadas
 
+Você pode sobrescrever mensagens padrão para todos os campos:
+
+```tsx
+useFormValidation({
+  lang: "pt",
+  defaultMessages: {
+    pt: {
+      required: "Preenchimento obrigatório!",
+    },
+  },
+});
+```
+
+## 📦 Pronto para produção

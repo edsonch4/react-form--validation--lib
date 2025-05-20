@@ -1,15 +1,30 @@
-
 import { useRef, useState, useCallback } from "react";
 
 export type ValidationRule = (value: string, field?: HTMLInputElement) => boolean;
 
-export const validationMessages: Record<string, string> = {
-  required: "Este campo é obrigatório.",
-  email: "Digite um email válido.",
-  onlyLetters: "Use apenas letras.",
-  equalsTo: "Os campos não coincidem.",
-  fileType: "Tipo de arquivo inválido.",
-  default: "Campo inválido.",
+export const defaultValidationMessages: Record<string, Record<string, string>> = {
+  pt: {
+    required: "Este campo é obrigatório.",
+    email: "Digite um email válido.",
+    onlyLetters: "Use apenas letras.",
+    equalsTo: "Os campos não coincidem.",
+    fileType: "Tipo de arquivo inválido.",
+    minlength: "Mínimo de caracteres não atingido.",
+    maxlength: "Máximo de caracteres excedido.",
+    pattern: "Formato inválido.",
+    default: "Campo inválido.",
+  },
+  en: {
+    required: "This field is required.",
+    email: "Please enter a valid email.",
+    onlyLetters: "Letters only.",
+    equalsTo: "Fields do not match.",
+    fileType: "Invalid file type.",
+    minlength: "Too short.",
+    maxlength: "Too long.",
+    pattern: "Invalid format.",
+    default: "Invalid field.",
+  },
 };
 
 const validationRules: Record<string, ValidationRule> = {
@@ -30,14 +45,42 @@ const validationRules: Record<string, ValidationRule> = {
   },
 };
 
-export function addValidationRule(name: string, rule: ValidationRule, message?: string) {
+export function addValidationRule(name: string, rule: ValidationRule, messages?: Record<string, string>) {
   validationRules[name] = rule;
-  if (message) validationMessages[name] = message;
+  if (messages) {
+    for (const lang in messages) {
+      defaultValidationMessages[lang] = {
+        ...defaultValidationMessages[lang],
+        [name]: messages[lang],
+      };
+    }
+  }
 }
 
-export function useFormValidation() {
+interface UseFormValidationOptions {
+  lang?: string;
+  messages?: Record<string, Record<string, Record<string, string>>>;
+  defaultMessages?: Record<string, Record<string, string>>;
+}
+
+export function useFormValidation(options: UseFormValidationOptions = {}) {
   const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const {
+    lang = "pt",
+    messages = {},
+    defaultMessages = {},
+  } = options;
+
+  const getMessage = (fieldName: string, rule: string): string => {
+    return (
+      messages[lang]?.[fieldName]?.[rule] ||
+      defaultMessages[lang]?.[rule] ||
+      defaultValidationMessages[lang]?.[rule] ||
+      defaultValidationMessages[lang]?.default ||
+      "Campo inválido"
+    );
+  };
 
   const validate = useCallback(() => {
     const form = formRef.current;
@@ -54,22 +97,22 @@ export function useFormValidation() {
 
       if (field.required && !field.value.trim()) {
         valid = false;
-        message = validationMessages.required;
+        message = getMessage(field.name, "required");
       }
 
       if (valid && field.type === "email") {
         valid = validationRules.email(field.value);
-        if (!valid) message = validationMessages.email;
+        if (!valid) message = getMessage(field.name, "email");
       }
 
       if (valid && field.type === "file") {
         valid = validationRules.fileType("", field);
-        if (!valid) message = validationMessages.fileType;
+        if (!valid) message = getMessage(field.name, "fileType");
       }
 
       if (valid && field.dataset.equalsTo) {
         valid = validationRules.equalsTo(field.value, field);
-        if (!valid) message = validationMessages.equalsTo;
+        if (!valid) message = getMessage(field.name, "equalsTo");
       }
 
       if (valid && field.dataset.validate) {
@@ -78,33 +121,33 @@ export function useFormValidation() {
           const rule = validationRules[ruleName.trim()];
           if (rule && !rule(field.value, field)) {
             valid = false;
-            message = validationMessages[ruleName.trim()] || validationMessages.default;
+            message = getMessage(field.name, ruleName.trim());
             break;
           }
         }
       }
 
-      if (valid && field.dataset.minlength) {
-        const min = parseInt(field.dataset.minlength);
+      if (valid && field.minLength > 0) {
+        const min = field.minLength;
         if (field.value.length < min) {
           valid = false;
-          message = `Mínimo ${min} caracteres.`;
+          message = getMessage(field.name, "minlength") || `Mínimo ${min} caracteres.`;
         }
       }
 
-      if (valid && field.dataset.maxlength) {
-        const max = parseInt(field.dataset.maxlength);
+      if (valid && field.maxLength > -1) {
+        const max = field.maxLength;
         if (field.value.length > max) {
           valid = false;
-          message = `Máximo ${max} caracteres.`;
+          message = getMessage(field.name, "maxlength") || `Máximo ${max} caracteres.`;
         }
       }
 
-      if (valid && field.dataset.pattern) {
-        const pattern = new RegExp(field.dataset.pattern);
+      if (valid && field.pattern) {
+        const pattern = new RegExp(field.pattern);
         if (!pattern.test(field.value)) {
           valid = false;
-          message = validationMessages.default;
+          message = getMessage(field.name, "pattern");
         }
       }
 
@@ -115,7 +158,7 @@ export function useFormValidation() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, []);
+  }, [lang, messages, defaultMessages]);
 
   return { formRef, errors, validate };
 }
