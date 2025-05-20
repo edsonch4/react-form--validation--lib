@@ -13,13 +13,14 @@ Uma biblioteca leve, poderosa e extensível para validação de formulários em 
 
 ## 🚀 Instalação
 ```bash
-npm install react-form-validator
+npm installreact-form--validation--lib
+yarn add react-form--validation--lib
 ```
 
 ## 🔧 Uso Básico
 ```tsx
 import React from "react";
-import { useFormValidation } from "react-form-validator";
+import { useFormValidation } from "react-form--validation--lib";
 
 export default function MyForm() {
   const { formRef, errors, validate } = useFormValidation();
